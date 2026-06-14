@@ -62,14 +62,12 @@ class WasteDonationController extends Controller
             // Masukkan poin ke dompet digital B2B (UserPoint)
             $userPoint = UserPoint::firstOrCreate(
                 ['user_id' => $donation->user_id],
-                ['total_points' => 0, 'redeemed_points' => 0, 'available_points' => 0, 'points' => 0]
+                ['total_points' => 0, 'redeemed_points' => 0, 'available_points' => 0]
             );
             
             // Increment saldo poin B2B
-            $userPoint->increment('points', $pointsToAward);
-            
-            // Trik untuk mengupdate total kontribusi berat di Dashboard B2B
-            // Kita pastikan saat statusnya "selesai" (bukan hanya "validated"), controller B2B akan menghitungnya.
+            $userPoint->increment('available_points', $pointsToAward); 
+            $userPoint->increment('total_points', $pointsToAward);
         }
 
         $donation->save();

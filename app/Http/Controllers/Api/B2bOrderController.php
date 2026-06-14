@@ -8,6 +8,7 @@ use App\Models\B2bOrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class B2bOrderController extends Controller
@@ -100,5 +101,28 @@ class B2bOrderController extends Controller
         }
 
         return response()->json($order);
+    }
+
+    public function submitQuoteRequest(Request $request)
+    {
+        $request->validate([
+            'product_name' => 'required',
+            'quantity' => 'required|integer|min:10', // Minimal order B2B
+            'logo' => 'nullable|image|max:2048',
+        ]);
+
+        $logoPath = $request->hasFile('logo') ? $request->file('logo')->store('logos', 'public') : null;
+
+        \App\Models\B2bQuoteRequest::create([
+            'user_id' => Auth::id(),
+            'company_name' => Auth::user()->b2bProfile->company_name,
+            'product_name' => $request->product_name,
+            'quantity' => $request->quantity,
+            'customization_details' => $request->customization_details,
+            'logo_path' => $logoPath,
+            'status' => 'pending'
+        ]);
+
+        return redirect()->back()->with('success', 'Permintaan penawaran harga telah dikirim ke tim kami!');
     }
 }

@@ -10,28 +10,26 @@ use Carbon\Carbon;
 
 class B2bController extends Controller
 {
-    /**
-     * Tampilkan Dashboard Utama B2B
-     */
     public function dashboard()
     {
         $user = Auth::user();
         
-        // Mengambil saldo poin digital aktif milik user
-        $pointsData = UserPoint::where('user_id', $user->id)->first();
-        $currentPoints = $pointsData ? $pointsData->points : 0;
+        // Perbaikan: Pastikan kita mengambil 'available_points' dari tabel user_points
+        $pointsData = \App\Models\UserPoint::where('user_id', $user->id)->first();
         
-        // Menghitung ringkasan statistik
-        $totalWeight = WasteDonation::where('user_id', $user->id)
-            ->where('status', 'selesai') 
+        // Jika data belum ada, berikan nilai 0
+        $currentPoints = $pointsData ? $pointsData->available_points : 0;
+        
+        // Menghitung ringkasan statistik limbah yang sudah berstatus 'selesai'
+        $totalWeight = \App\Models\WasteDonation::where('user_id', $user->id)
+            ->where('status', 'selesai')
             ->sum('weight');
 
-        $pendingPickups = WasteDonation::where('user_id', $user->id)
-            ->where('status', 'pending')
+        $pendingPickups = \App\Models\WasteDonation::where('user_id', $user->id)
+            ->whereIn('status', ['diajukan', 'kurasi', 'penjemputan'])
             ->count();
 
-        // Mengambil 5 riwayat transaksi penyerahan limbah terakhir
-        $recentDonations = WasteDonation::where('user_id', $user->id)
+        $recentDonations = \App\Models\WasteDonation::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
@@ -116,6 +114,7 @@ class B2bController extends Controller
         
         // Saldo Poin Saat Ini
         $pointsData = UserPoint::where('user_id', $user->id)->first();
+        dd($pointsData);
         $currentPoints = $pointsData ? $pointsData->points : 0;
 
         // Riwayat Transaksi Poin (Diasumsikan poin masuk jika status limbah 'diterima' atau 'selesai')
