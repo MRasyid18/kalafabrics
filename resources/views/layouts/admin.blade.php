@@ -31,7 +31,7 @@
     .sidebar-brand-text{font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:white;font-weight:500;}
     .sidebar-brand-sub{font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.08em;text-transform:uppercase;}
 
-    .sidebar-nav{flex:1;padding:16px 10px;}
+    .sidebar-nav{flex:1;padding:16px 10px; overflow-y:auto;}
     .nav-section-label{
       font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
       color:rgba(255,255,255,.3);padding:12px 10px 8px;
@@ -68,7 +68,7 @@
     .sidebar-logout:hover{background:rgba(192,57,43,.15);color:#e07070;}
 
     /* Main area */
-    .admin-main{margin-left:240px;flex:1;min-height:100vh;display:flex;flex-direction:column;}
+    .admin-main{margin-left:240px;flex:1;min-height:100vh;display:flex;flex-direction:column; width: calc(100% - 240px);}
 
     /* Top bar */
     .admin-topbar{
@@ -76,6 +76,7 @@
       padding:0 32px;height:60px;display:flex;align-items:center;
       justify-content:space-between;position:sticky;top:0;z-index:50;
     }
+    .topbar-left { display:flex; align-items:center; gap:16px; }
     .topbar-title{font-size:16px;font-weight:500;color:#1e2318;}
     .topbar-right{display:flex;align-items:center;gap:16px;}
     .topbar-date{font-size:13px;color:#9a9988;}
@@ -111,11 +112,11 @@
     .stat-card-trend{font-size:12px;color:#2d6a4f;display:flex;align-items:center;gap:4px;margin-top:6px;}
 
     /* Tables */
-    .card{background:white;border:1px solid #e8e5dd;border-radius:16px;overflow:hidden;}
+    .card{background:white;border:1px solid #e8e5dd;border-radius:16px;overflow-x:auto;}
     .card-header{padding:20px 24px;border-bottom:1px solid #e8e5dd;display:flex;justify-content:space-between;align-items:center;}
     .card-header h3{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:400;}
     .card-body{padding:0;}
-    table{width:100%;border-collapse:collapse;}
+    table{width:100%;border-collapse:collapse; min-width: 600px;}
     thead th{padding:12px 20px;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9a9988;text-align:left;border-bottom:1px solid #e8e5dd;background:#faf9f6;}
     tbody td{padding:14px 20px;font-size:14px;border-bottom:1px solid #f0ede6;vertical-align:middle;}
     tbody tr:last-child td{border-bottom:none;}
@@ -160,18 +161,27 @@
     .empty-state .icon{font-size:36px;margin-bottom:10px;}
     .empty-state p{font-size:14px;}
 
-    /* Responsive */
-    @media(max-width:768px){
+    /* Mobile Responsiveness */
+    .mobile-toggle { display:none; background:none; border:none; font-size:24px; color:#1e2318; cursor:pointer; }
+    .sidebar-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:90; }
+
+    @media(max-width:900px){
       .sidebar{transform:translateX(-100%);}
-      .admin-main{margin-left:0;}
+      .sidebar.open{transform:translateX(0);}
+      .sidebar-overlay.show { display:block; }
+      .admin-main{margin-left:0; width: 100%;}
+      .mobile-toggle { display:block; }
+      .topbar-date { display:none; }
+      .admin-content{padding:20px;}
     }
   </style>
   @stack('styles')
 </head>
 <body>
 
-  <!-- ── Sidebar ── -->
-  <aside class="sidebar">
+  <div class="sidebar-overlay" onclick="toggleAdminSidebar()"></div>
+
+  <aside class="sidebar" id="adminSidebar">
     <div class="sidebar-brand">
       <div class="sidebar-brand-icon">K</div>
       <div>
@@ -187,29 +197,23 @@
         <span class="nav-icon">📊</span> Dashboard
       </a>
 
-    <div class="nav-section-label" style="margin-top:8px">Manajemen</div>
+      <div class="nav-section-label" style="margin-top:8px">Manajemen</div>
 
-      <span class="nav-item coming-soon">
+      <a href="{{ route('admin.users.index') }}" class="nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
         <span class="nav-icon">👥</span> Pengguna
-        <span class="nav-badge">Soon</span>
-      </span>
+      </a>
       <a href="{{ route('admin.products.index') }}" class="nav-item {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
         <span class="nav-icon">📦</span> Produk
       </a>
       <a href="{{ route('admin.orders.index') }}" class="nav-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
         <span class="nav-icon">🛒</span> Pesanan
       </a>
-      
-      {{-- --- TAMBAHAN MENU KURASI LIMBAH B2B --- --}}
       <a href="{{ route('admin.waste.index') }}" class="nav-item {{ request()->routeIs('admin.waste.*') ? 'active' : '' }}">
         <span class="nav-icon">♻️</span> Kurasi Limbah
       </a>
-      {{-- --------------------------------------- --}}
-
-      <span class="nav-item coming-soon">
+      <a href="{{ route('admin.rangers.index') }}" class="nav-item {{ request()->routeIs('admin.rangers.*') ? 'active' : '' }}">
         <span class="nav-icon">🤝</span> Ranger
-        <span class="nav-badge">Soon</span>
-      </span>
+      </a>
 
       <div class="nav-section-label" style="margin-top:8px">Konten</div>
 
@@ -247,33 +251,41 @@
     </div>
   </aside>
 
-  <!-- ── Main Area ── -->
   <div class="admin-main">
 
-    <!-- Top Bar -->
     <div class="admin-topbar">
-      <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
+      <div class="topbar-left">
+        <button class="mobile-toggle" onclick="toggleAdminSidebar()">☰</button>
+        <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
+      </div>
       <div class="topbar-right">
         <span class="topbar-date">{{ now()->locale('id')->isoFormat('dddd, D MMMM Y') }}</span>
         <a href="{{ route('home') }}" class="topbar-site-link" target="_blank">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          Lihat Website
+          <span style="display:none; @media(min-width:600px){display:inline;}">Lihat Website</span>
         </a>
       </div>
     </div>
 
-    <!-- Content -->
     <div class="admin-content">
       @if(session('success'))
         <div style="background:#e8f5f0;border:1px solid #c8e6d8;border-radius:10px;padding:12px 18px;margin-bottom:20px;font-size:13px;color:#2d6a4f">
           ✅ {{ session('success') }}
         </div>
       @endif
+      
       @yield('content')
+      
     </div>
 
   </div>
 
+  <script>
+    function toggleAdminSidebar() {
+      document.getElementById('adminSidebar').classList.toggle('open');
+      document.querySelector('.sidebar-overlay').classList.toggle('show');
+    }
+  </script>
   @stack('scripts')
 </body>
 </html>

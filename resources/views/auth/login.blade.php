@@ -6,17 +6,63 @@
   <title>Sign In - KalaFabrics</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+  
+  <style>
+    /* ── Penyesuaian Responsivitas Tampilan Login ── */
+    body, html { margin: 0; padding: 0; height: 100%; background-color: #f0ede6; }
+    .auth-page { display: flex; flex-direction: column; min-height: 100vh; }
+    
+    .auth-nav { padding: 20px; text-align: center; }
+    .auth-nav .navbar-brand { font-size: 24px; font-weight: 600; color: #1e2318; text-decoration: none; }
+    
+    .auth-main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    
+    .auth-card { 
+      width: 100%; 
+      max-width: 400px; 
+      background: white; 
+      padding: 40px; 
+      border-radius: 16px; 
+      border: 1px solid #e8e5dd;
+      box-shadow: 0 4px 24px rgba(30, 35, 24, 0.04);
+    }
+    
+    .auth-card h2 { font-family: 'Cormorant Garamond', serif; font-size: 28px; margin-top: 0; margin-bottom: 8px; text-align: center; color: #1e2318; }
+    .auth-subtitle { text-align: center; color: #6b6b5a; font-size: 14px; margin-bottom: 28px; line-height: 1.5; }
+    
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 13px; font-weight: 600; color: #6b6b5a; margin-bottom: 6px; }
+    .form-control { width: 100%; padding: 12px; border: 1px solid #e8e5dd; border-radius: 8px; font-family: inherit; font-size: 14px; box-sizing: border-box; }
+    .form-control:focus { outline: none; border-color: #2d3a1e; }
+    
+    .input-wrapper { position: relative; }
+    .input-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 16px; color: #9a9988; }
+    
+    .btn-block { display: block; width: 100%; text-align: center; box-sizing: border-box; }
+    .btn-lg { padding: 14px; font-size: 15px; border-radius: 8px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; }
+    .btn-primary { background: #2d3a1e; color: white; transition: background 0.2s; }
+    .btn-primary:hover { background: #1e2318; }
+    .btn-secondary { background: #f0ede6; color: #1e2318; transition: background 0.2s; margin-top: 10px;}
+    .btn-secondary:hover { background: #e8e5dd; }
+
+    .footer { padding: 20px; text-align: center; border-top: 1px solid #e8e5dd; font-size: 12px; color: #9a9988; }
+
+    /* Responsivitas untuk Layar HP */
+    @media (max-width: 576px) {
+      .auth-main { align-items: flex-start; padding: 0 16px; margin-top: 20px; }
+      .auth-card { padding: 24px; border: none; box-shadow: none; background: transparent; }
+      body, html { background-color: white; }
+    }
+  </style>
 </head>
 <body>
 
 <div class="auth-page">
 
-  <!-- Nav -->
   <nav class="auth-nav">
     <a href="{{ route('home') }}" class="navbar-brand">KalaFabrics</a>
   </nav>
 
-  <!-- Main -->
   <main class="auth-main">
     <div class="auth-card">
       <h2>Selamat Datang Kembali</h2>
@@ -40,62 +86,37 @@
         @csrf
 
         <div class="form-group">
-          <label class="form-label">Email</label>
-          <input type="email" name="email" class="form-control @error('email') invalid @enderror"
-            placeholder="nama@email.com" value="{{ old('email') }}" autocomplete="email">
+          <label class="form-label">Alamat Email</label>
+          <input type="email" name="email" class="form-control" placeholder="nama@email.com" value="{{ old('email') }}" required autocomplete="email">
         </div>
 
         <div class="form-group">
-          <div class="d-flex justify-between align-center" style="margin-bottom:8px">
-            <label class="form-label" style="margin:0">Password</label>
-          </div>
+          <label class="form-label">Password</label>
           <div class="input-wrapper">
-            <input type="password" name="password" id="passwordInput" class="form-control"
-              placeholder="••••••••" autocomplete="current-password">
+            <input type="password" name="password" id="passwordInput" class="form-control" placeholder="••••••••" required autocomplete="current-password">
             <button type="button" class="input-toggle" onclick="togglePass()">&#128064;</button>
           </div>
         </div>
 
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:24px">
           <input type="checkbox" name="remember" id="remember" style="width:16px;height:16px;cursor:pointer">
-          <label for="remember" style="font-size:13px;color:var(--text-muted);cursor:pointer">Ingat saya</label>
+          <label for="remember" style="font-size:13px;color:#6b6b5a;cursor:pointer">Ingat saya</label>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-bottom:12px">
+        <button type="submit" class="btn-primary btn-block btn-lg">
           Masuk
         </button>
       </form>
 
-      <a href="{{ route('register') }}" class="btn btn-secondary btn-block btn-lg">
+      <a href="{{ route('register') }}" class="btn-secondary btn-block btn-lg" style="display:block;">
         Daftar Akun Baru
       </a>
-
-      {{-- Demo Login Info --}}
-      <div class="auth-divider">
-        <div class="auth-divider-line"></div>
-        <span class="auth-divider-text">Akun Demo</span>
-        <div class="auth-divider-line"></div>
-      </div>
-
-      <div style="background:var(--bg-alt);border-radius:var(--r-lg);padding:16px;font-size:13px">
-        <div style="margin-bottom:10px;display:flex;justify-content:space-between">
-          <span style="color:var(--text-muted)">👤 Admin</span>
-          <span>admin@kalafabrics.id / <strong>admin</strong></span>
-        </div>
-        <div style="display:flex;justify-content:space-between">
-          <span style="color:var(--text-muted)">🌿 Pengguna</span>
-          <span>pengguna@kalafabrics.id / <strong>password</strong></span>
-        </div>
-      </div>
 
     </div>
   </main>
 
-  <!-- Footer -->
-  <footer style="padding:24px 40px;border-top:1px solid var(--border-light)">
-    <div style="display:flex;justify-content:center;align-items:center">
-      <span class="text-xs text-muted">© 2024 KalaFabrics Circular Textiles. All rights reserved.</span>
-    </div>
+  <footer class="footer">
+    <span>© {{ date('Y') }} KalaFabrics Circular Textiles. All rights reserved.</span>
   </footer>
 </div>
 
@@ -103,8 +124,13 @@
 function togglePass() {
   var inp = document.getElementById('passwordInput');
   var btn = document.querySelector('.input-toggle');
-  if (inp.type === 'password') { inp.type = 'text'; btn.innerHTML = '&#128065;'; }
-  else { inp.type = 'password'; btn.innerHTML = '&#128064;'; }
+  if (inp.type === 'password') { 
+      inp.type = 'text'; 
+      btn.innerHTML = '&#128065;'; 
+  } else { 
+      inp.type = 'password'; 
+      btn.innerHTML = '&#128064;'; 
+  }
 }
 </script>
 </body>

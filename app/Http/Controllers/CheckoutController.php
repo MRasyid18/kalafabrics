@@ -70,4 +70,14 @@ class CheckoutController extends Controller
             ], 500);        
         }
     }
+
+    public function history()
+    {
+        $orders = Order::with('items.product')
+            ->where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('pages.orders', compact('orders'));
+    }
 }

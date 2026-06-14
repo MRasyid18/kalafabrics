@@ -24,10 +24,10 @@
       color:white;display:flex;align-items:center;justify-content:center;
       font-size:12px;font-weight:600;flex-shrink:0;
     }
-    .user-name { color:var(--text);font-weight:500; }
+    .user-name { color:var(--text);font-weight:500; white-space:nowrap; }
     .user-role-badge {
       font-size:10px;padding:2px 7px;border-radius:var(--r-full);
-      font-weight:600;letter-spacing:.04em;
+      font-weight:600;letter-spacing:.04em; white-space:nowrap;
     }
     .badge-admin    { background:#fdf0dc;color:#8b6914; }
     .badge-ranger   { background:var(--success-bg);color:var(--success); }
@@ -37,13 +37,10 @@
       position:absolute;top:calc(100% + 8px);right:0;
       background:var(--white);border:1px solid var(--border-light);
       border-radius:var(--r-lg);padding:8px;min-width:200px;
-      box-shadow:var(--shadow-md);z-index:200;
-      display:none;
+      box-shadow:var(--shadow-md);z-index:200; display:none;
     }
     .user-menu.open .user-dropdown { display:block; }
-    .user-dropdown-header {
-      padding:10px 12px 12px;border-bottom:1px solid var(--border-light);margin-bottom:6px;
-    }
+    .user-dropdown-header { padding:10px 12px 12px;border-bottom:1px solid var(--border-light);margin-bottom:6px; }
     .user-dropdown-name { font-weight:600;font-size:14px;color:var(--text); }
     .user-dropdown-email { font-size:12px;color:var(--text-muted);margin-top:2px; }
     .dropdown-item {
@@ -64,6 +61,21 @@
     }
     .flash-success { background:#e8f5f0;color:var(--success);border-bottom:1px solid #c8e6d8; }
     .flash-error   { background:var(--danger-bg);color:var(--danger);border-bottom:1px solid #f5c6c0; }
+
+    /* Responsivitas Mobile Navbar */
+    .mobile-menu-btn { display:none; background:none; border:none; font-size:24px; cursor:pointer; color:var(--text); }
+    @media(max-width: 768px) {
+      .navbar-nav {
+        display:none; flex-direction:column; position:absolute; top:var(--nav-h); left:0; width:100%;
+        background:var(--bg); padding:20px; border-bottom:1px solid var(--border-light);
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); gap:16px; z-index:1000;
+      }
+      .navbar-nav.show { display:flex; }
+      .mobile-menu-btn { display:block; }
+      .navbar-actions { gap: 10px; }
+      .user-name { display:none; }
+      .user-role-badge { display:none; }
+    }
   </style>
   @stack('styles')
 </head>
@@ -77,9 +89,12 @@
               $brandRoute = route('b2b.dashboard');
           }
       @endphp
+      
+      <button class="mobile-menu-btn" onclick="toggleMobileNav()">☰</button>
+
       <a href="{{ $brandRoute }}" class="navbar-brand">KalaFabrics</a>
 
-      <ul class="navbar-nav">
+      <ul class="navbar-nav" id="mobileNav">
         <li><a href="{{ route('catalog') }}"   class="{{ request()->routeIs('catalog')   ? 'active' : '' }}">Catalog</a></li>
         <li><a href="{{ route('impact') }}"    class="{{ request()->routeIs('impact')    ? 'active' : '' }}">Impact</a></li>
         <li><a href="{{ route('education') }}" class="{{ request()->routeIs('education') ? 'active' : '' }}">Education</a></li>
@@ -93,27 +108,23 @@
       </ul>
 
       <div class="navbar-actions">
-
         @guest
-          {{-- Belum login --}}
           <a href="{{ route('login') }}" class="btn-sign-in">Sign In</a>
           <a href="{{ route('register') }}" class="btn btn-primary btn-sm">Daftar</a>
         @endguest
 
         @auth
-          {{-- Sudah login --}}
           @if(!auth()->user()->isAdmin())
             <a href="{{ route('cart') }}" class="btn-cart">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
               </svg>
-              Cart
+              <span class="cart-text">Cart</span>
               <span class="cart-count" id="global-cart-count">0</span>
             </a>
           @endif
 
-          {{-- User dropdown --}}
           <div class="user-menu" id="userMenu">
             <button class="user-trigger" onclick="toggleUserMenu()">
               <div class="user-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
@@ -132,26 +143,21 @@
                 <a href="{{ route('admin.dashboard') }}" class="dropdown-item">⚙️ Dashboard Admin</a>
                 <div class="dropdown-divider"></div>
               @endif
-
               @if(auth()->user()->role === 'ranger')
                 <a href="{{ route('ranger.dashboard') }}" class="dropdown-item">🏕️ Hub Ranger</a>
                 <div class="dropdown-divider"></div>
               @endif
-
               @if(auth()->user()->role === 'b2b')
                 <a href="{{ route('b2b.dashboard') }}" class="dropdown-item">🏢 Dashboard Mitra B2B</a>
                 <div class="dropdown-divider"></div>
               @endif
-
               @if(!auth()->user()->isAdmin())
                 <a href="{{ route('user.orders') }}" class="dropdown-item">📦 Pesanan Saya</a>
                 <div class="dropdown-divider"></div>
               @endif
 
               <a href="{{ route('home') }}" class="dropdown-item">🏠 Beranda</a>
-
               <div class="dropdown-divider"></div>
-
               <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="dropdown-item danger">🚪 Keluar</button>
@@ -159,12 +165,10 @@
             </div>
           </div>
         @endauth
-
       </div>
     </div>
   </nav>
 
-  {{-- Flash Messages --}}
   @if(session('success'))
     <div class="flash-bar flash-success">✅ {{ session('success') }}</div>
   @endif
@@ -179,7 +183,7 @@
       <div class="footer-grid">
         <div>
           <div class="footer-brand">KalaFabrics</div>
-          <p class="footer-tagline">© 2024 KalaFabrics. Crafted with<br>Quiet Sustainability.</p>
+          <p class="footer-tagline">© {{ date('Y') }} KalaFabrics. Crafted with<br>Quiet Sustainability.</p>
         </div>
         <div>
           <div class="footer-col-title">Company</div>
@@ -208,10 +212,12 @@
 
   <script src="{{ asset('js/app.js') }}"></script>
   <script>
+    function toggleMobileNav() {
+      document.getElementById('mobileNav').classList.toggle('show');
+    }
     function toggleUserMenu() {
       document.getElementById('userMenu').classList.toggle('open');
     }
-    // Tutup dropdown jika klik di luar
     document.addEventListener('click', function(e) {
       var menu = document.getElementById('userMenu');
       if (menu && !menu.contains(e.target)) {
@@ -219,33 +225,18 @@
       }
     });
 
-    // BUG FIX: Fungsi untuk mengupdate angka keranjang di navbar
     function updateGlobalCartCount() {
       var cartCountEl = document.getElementById('global-cart-count');
       if (cartCountEl) {
         var cartData = JSON.parse(sessionStorage.getItem('kala_cart')) || [];
         var totalItems = 0;
-        
-        // Hitung total kuantitas dari semua produk
-        cartData.forEach(function(item) {
-          totalItems += parseInt(item.qty);
-        });
-        
+        cartData.forEach(function(item) { totalItems += parseInt(item.qty); });
         cartCountEl.textContent = totalItems;
       }
     }
-
-    // Jalankan fungsi update saat halaman dimuat
-    document.addEventListener('DOMContentLoaded', function() {
-      updateGlobalCartCount();
-    });
-
-    // Opsional: Jika Anda menghapus atau menambah item di halaman Cart, 
-    // update angkanya juga secara langsung
+    document.addEventListener('DOMContentLoaded', updateGlobalCartCount);
     window.addEventListener('storage', function(e) {
-      if(e.key === 'kala_cart') {
-        updateGlobalCartCount();
-      }
+      if(e.key === 'kala_cart') updateGlobalCartCount();
     });
   </script>
   @stack('scripts')

@@ -86,14 +86,23 @@ class B2bController extends Controller
      * Tampilkan Seluruh Riwayat Transaksi Limbah dengan Paginasi
      */
     public function history()
-    {
-        $donations = WasteDonation::where('user_id', Auth::id())
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        {
+            $user = Auth::user();
+            
+            // Mengambil semua riwayat donasi milik B2B ini
+            $donations = WasteDonation::where('user_id', $user->id)
+                            ->orderBy('created_at', 'desc')
+                            ->get();
+                            
+            // Mengambil total poin
+            $userPoint = UserPoint::where('user_id', $user->id)->first();
+            $currentPoints = $userPoint ? $userPoint->total_points : 0;
+            
+            // Menghitung total limbah yang statusnya sudah Selesai (divalidasi Ranger)
+            $validatedWeight = $donations->where('status', 'selesai')->sum('weight');
 
-        return view('b2b.donations.history', compact('donations'));
-    }
-
+            return view('b2b.history', compact('user', 'donations', 'currentPoints', 'validatedWeight'));
+        }
     /**
      * Tampilkan Halaman Pelacakan Status Limbah (Waste Tracking)
      */
@@ -125,5 +134,4 @@ class B2bController extends Controller
 
         return view('b2b.points.index', compact('currentPoints', 'pointHistory'));
     }
-
 }

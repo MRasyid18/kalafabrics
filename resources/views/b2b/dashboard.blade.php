@@ -5,13 +5,13 @@
     
     <div class="row align-items-end mb-5">
         <div class="col-md-8">
-            <h1 style="font-family: 'Cormorant Garamond', serif; font-size: 2.8rem; font-weight: 500; color: #1e2318; margin-bottom: 8px;">
+            <h1 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem, 5vw, 2.8rem); font-weight: 500; color: #1e2318; margin-bottom: 8px;">
                 Dashboard Mitra
             </h1>
             <p style="color: #6b6b5a; font-size: 1.1rem;">Selamat datang, <strong>{{ $user->name }}</strong>. Pantau performa keberlanjutan perusahaan Anda.</p>
         </div>
         <div class="col-md-4 text-md-end mt-4 mt-md-0">
-            <a href="{{ route('b2b.donations.create') }}" class="btn" style="background: #2d3a1e; color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 0.95rem;">
+            <a href="{{ route('b2b.donations.create') }}" class="btn" style="background: #2d3a1e; color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 0.95rem; display: inline-block;">
                 + Ajukan Penjemputan
             </a>
         </div>
@@ -34,30 +34,30 @@
         @endforeach
     </div>
 
-    <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: baseline;">
-        <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; margin: 0;">Aktivitas Terakhir</h2>
-        <a href="{{ route('b2b.donations.history') }}" style="color: #c9a85c; text-decoration: none; font-weight: 600; font-size: 0.9rem;">Lihat Semua &rarr;</a>
+    <div style="margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center;">
+        <h2 style="font-family: 'Cormorant Garamond', serif; font-size: clamp(1.4rem, 4vw, 1.8rem); margin: 0;">Aktivitas Terakhir</h2>
+        <a href="{{ route('b2b.donations.history') }}" style="color: #c9a85c; text-decoration: none; font-weight: 600; font-size: 0.9rem; white-space: nowrap;">Lihat Semua &rarr;</a>
     </div>
 
-    <div style="background: white; border: 1px solid #e8e5dd; border-radius: 16px; overflow: hidden;">
-        <table class="table table-hover align-middle mb-0">
+    <div style="background: white; border: 1px solid #e8e5dd; border-radius: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px;">
+        <table class="table table-hover align-middle mb-0" style="min-width: 900px; margin: 0;">
             <thead style="background: #faf9f6;">
                 <tr>
-                    <th style="padding: 20px 24px; font-size: 11px; text-transform: uppercase; color: #9a9988; border: none;">ID Transaksi</th>
-                    <th style="padding: 20px 24px; font-size: 11px; text-transform: uppercase; color: #9a9988; border: none;">Tanggal</th>
-                    <th style="padding: 20px 24px; font-size: 11px; text-transform: uppercase; color: #9a9988; border: none;">Jenis Limbah</th>
-                    <th style="padding: 20px 24px; font-size: 11px; text-transform: uppercase; color: #9a9988; border: none;">Berat</th>
-                    <th style="padding: 20px 24px; font-size: 11px; text-transform: uppercase; color: #9a9988; border: none;">Status</th>
+                    <th style="padding: 20px 24px; font-size: 11px; text-transform: uppercase; color: #9a9988; border: none; white-space: nowrap;">ID Transaksi</th>
+                    <th style="padding: 20px 24px; font-size: 11px; text-transform: uppercase; color: #9a9988; border: none; white-space: nowrap;">Tanggal</th>
+                    <th style="padding: 20px 24px; font-size: 11px; text-transform: uppercase; color: #9a9988; border: none; white-space: nowrap;">Jenis Limbah</th>
+                    <th style="padding: 20px 24px; font-size: 11px; text-transform: uppercase; color: #9a9988; border: none; white-space: nowrap;">Berat</th>
+                    <th style="padding: 20px 24px; font-size: 11px; text-transform: uppercase; color: #9a9988; border: none; white-space: nowrap;">Status</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($recentDonations as $donation)
                 <tr>
-                    <td style="padding: 20px 24px; font-family: monospace; font-weight: 600; color: #c9a85c;">#KALA-{{ str_pad($donation->id, 5, '0', STR_PAD_LEFT) }}</td>
-                    <td style="padding: 20px 24px;">{{ $donation->created_at->format('d M Y') }}</td>
-                    <td style="padding: 20px 24px; font-weight: 500;">{{ $donation->waste_type }}</td>
-                    <td style="padding: 20px 24px;">{{ $donation->weight }} Kg</td>
-                    <td style="padding: 20px 24px;">
+                    <td style="padding: 20px 24px; font-family: monospace; font-weight: 600; color: #c9a85c; white-space: nowrap;">#KALA-{{ str_pad($donation->id, 5, '0', STR_PAD_LEFT) }}</td>
+                    <td style="padding: 20px 24px; white-space: nowrap;">{{ $donation->created_at->format('d M Y') }}</td>
+                    <td style="padding: 20px 24px; font-weight: 500; white-space: nowrap;">{{ $donation->waste_type }}</td>
+                    <td style="padding: 20px 24px; white-space: nowrap;">{{ $donation->weight }} Kg</td>
+                    <td style="padding: 20px 24px; white-space: nowrap;">
                         @php
                             $statusMap = [
                                 'diajukan' => ['bg' => '#fdf0dc', 'text' => '#8b6914'],
