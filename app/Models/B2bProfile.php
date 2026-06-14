@@ -15,6 +15,7 @@ class B2bProfile extends Model
         'user_id',
         'company_name',
         'company_registration_number',
+        'npwp',
         'company_address',
         'city',
         'province',

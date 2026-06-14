@@ -62,7 +62,7 @@ class AuthController extends Controller
             'name'     => 'required|string|max:100',
             'email'    => 'required|email|unique:users,email',
             'password' => 'required|min:8|confirmed',
-            'role'     => 'required|in:b2c,ranger',
+            'role'     => 'required|in:b2c,b2b,ranger',
         ], [
             'name.required'      => 'Nama lengkap wajib diisi.',
             'email.required'     => 'Email wajib diisi.',
@@ -72,7 +72,7 @@ class AuthController extends Controller
             'password.min'       => 'Password minimal 8 karakter.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'role.required'      => 'Pilih peran Anda.',
-            'role.in'            => 'Peran tidak valid. Pilih Member atau Ranger.',
+            'role.in'            => 'Peran tidak valid. Pilih Member, Mitra B2B, atau Ranger.',
         ]);
 
         $user = User::create([
@@ -104,11 +104,11 @@ class AuthController extends Controller
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
         } elseif ($user->role === 'ranger') {
-            // FIX: Tambahkan kondisi khusus untuk role ranger
             return redirect()->route('ranger.dashboard');
+        } elseif ($user->role === 'b2b') {
+            return redirect()->route('b2b.dashboard');
         }
         
-        // Default untuk pengguna biasa (B2C/B2B)
         return redirect()->route('home');
     }
 }

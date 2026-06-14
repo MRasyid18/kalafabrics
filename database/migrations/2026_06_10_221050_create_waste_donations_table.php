@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('donation_number')->unique();
+            $table->decimal('weight', 8, 2)->default(0);
             $table->enum('status', ['pending_pickup', 'picked_up', 'received', 'verified', 'rejected'])->default('pending_pickup');
             $table->decimal('total_weight_kg', 10, 2);
             $table->integer('points_awarded')->default(0);
