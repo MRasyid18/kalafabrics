@@ -48,7 +48,9 @@ Route::middleware(['auth', 'web.role:b2c,b2b,ranger'])->group(function () {
     
     // Rute untuk memproses data checkout dan melihat riwayat pesanan
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
-    Route::get('/my-orders', [CheckoutController::class, 'history'])->name('user.orders');
+    // Route::get('/my-orders', [CheckoutController::class, 'history'])->name('user.orders');
+    // Tambahkan ini di routes/web.php
+    Route::get('/my-orders', [App\Http\Controllers\CheckoutController::class, 'history'])->name('orders.history');
 });
 
 /* ══════════════════════════════════════

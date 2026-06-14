@@ -10,15 +10,15 @@
         <p style="margin-top:12px;margin-bottom:32px">Punya pertanyaan atau ide kolaborasi? Jangan ragu untuk mengirim pesan kepada kami.</p>
         <div class="contact-detail">
           <span>📍</span>
-          <span>Jl. Sirkular No. 123, Jakarta Selatan, Indonesia</span>
+          <span>Jl. Kuaro, Sidodadi, Kec. Samarinda Ulu, Kota Samarinda, Kalimantan Timur, Indonesia</span>
         </div>
         <div class="contact-detail">
           <span>✉️</span>
-          <span>hello@kalafabrics.id</span>
+          <span>tes@kalafabrics.id</span>
         </div>
         <div class="contact-detail">
           <span>📞</span>
-          <span>+62 812 5464 7890</span>
+          <span>0821-5088-8442</span>
         </div>
         <div class="social-links">
           <a class="social-link" href="#">IG</a>

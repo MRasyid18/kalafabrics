@@ -38,13 +38,18 @@ class CheckoutController extends Controller
                 ]);
 
                 foreach ($request->items as $item) {
+                    // Cari produk berdasarkan nama
                     $product = Product::where('name', $item['name'])->first();
                     if ($product) {
+                        // Hitung total harga item
+                        $totalPrice = $item['price'] * $item['qty'];
+
                         OrderItem::create([
-                            'order_id'   => $newOrder->id,
-                            'product_id' => $product->id,
-                            'quantity'   => $item['qty'],
-                            'price'      => $item['price'],
+                            'order_id'    => $newOrder->id,
+                            'product_id'  => $product->id,
+                            'quantity'    => $item['qty'],
+                            'unit_price'  => $item['price'], // Sesuai dengan Model/Migration
+                            'total_price' => $totalPrice,    // Wajib diisi
                         ]);
                     }
                 }

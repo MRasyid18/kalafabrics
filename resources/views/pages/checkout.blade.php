@@ -88,7 +88,7 @@
                     sessionStorage.removeItem('kala_cart');
                     sessionStorage.removeItem('kala_shipping');
 
-                    let adminWa = '6281234567890'; // Ganti dengan nomor WA admin
+                    let adminWa = '6282150888442'; // Ganti dengan nomor WA admin
                     let text = `Halo Admin KalaFabrics! Saya ingin mengonfirmasi pesanan saya:\n\n`;
                     text += `*ID Pesanan:* #ORD-${data.order_id}\n`;
                     text += `*Nama:* ${document.getElementById('buyer-name').value}\n`;
