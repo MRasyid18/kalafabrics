@@ -10,7 +10,7 @@
     <form id="checkoutForm" style="margin-top:24px; background:white; padding:30px; border-radius:12px; border:1px solid #d8d4c8;">
         <div class="form-group" style="margin-bottom:16px;">
             <label style="font-weight:600; font-size:14px; display:block; margin-bottom:8px;">Nama Lengkap</label>
-            <input type="text" id="buyer-name" class="form-control-box" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;" value="{{ auth()->user()->name }}" required>
+            <input type="text" id="buyer-name" class="form-control-box" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;" value="{{ auth()->user()->name ?? '' }}" required>
         </div>
         <div class="form-group" style="margin-bottom:16px;">
             <label style="font-weight:600; font-size:14px; display:block; margin-bottom:8px;">Nomor WhatsApp</label>
@@ -61,20 +61,23 @@
             btn.textContent = 'Memproses...';
             btn.disabled = true;
 
-            let name = document.getElementById('buyer-name').value;
-            let phone = document.getElementById('buyer-phone').value;
-            let address = document.getElementById('buyer-address').value;
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+            
+            if (!csrfToken) {
+                alert('Sesi kadaluarsa. Silakan muat ulang halaman.');
+                location.reload();
+                return;
+            }
 
-            // 1. Simpan ke Database
             fetch("{{ route('checkout.store') }}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    'X-CSRF-TOKEN': csrfToken
                 },
                 body: JSON.stringify({
-                    shipping_address: address,
-                    phone: phone,
+                    shipping_address: document.getElementById('buyer-address').value,
+                    phone: document.getElementById('buyer-phone').value,
                     items: cart,
                     total_amount: totalAmount
                 })
@@ -82,26 +85,29 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    // 2. Kosongkan keranjang
                     sessionStorage.removeItem('kala_cart');
                     sessionStorage.removeItem('kala_shipping');
 
-                    // 3. Arahkan ke WhatsApp Admin
-                    let adminWa = '6281234567890'; // GANTI DENGAN NOMOR WA ADMIN
+                    let adminWa = '6281234567890'; // Ganti dengan nomor WA admin
                     let text = `Halo Admin KalaFabrics! Saya ingin mengonfirmasi pesanan saya:\n\n`;
                     text += `*ID Pesanan:* #ORD-${data.order_id}\n`;
-                    text += `*Nama:* ${name}\n`;
+                    text += `*Nama:* ${document.getElementById('buyer-name').value}\n`;
                     text += `*Total Pembayaran:* Rp ${totalAmount.toLocaleString('id-ID')}\n\n`;
                     text += `Mohon info rekening untuk pembayaran.`;
                     
                     window.location.href = `https://wa.me/${adminWa}?text=${encodeURIComponent(text)}`;
                 } else {
-                    alert('Terjadi kesalahan saat membuat pesanan.');
+                    alert('Gagal: ' + (data.message || 'Terjadi kesalahan sistem.'));
                     btn.textContent = 'Buat Pesanan via WhatsApp';
                     btn.disabled = false;
                 }
             })
-            .catch(err => { console.error(err); alert('Kesalahan jaringan.'); btn.disabled = false; });
+            .catch(err => { 
+                console.error(err); 
+                alert('Terjadi kesalahan jaringan.'); 
+                btn.textContent = 'Buat Pesanan via WhatsApp';
+                btn.disabled = false; 
+            });
         });
     });
 </script>
