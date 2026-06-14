@@ -12,9 +12,22 @@ class WasteDonation extends Model
     use HasFactory;
 
     protected $fillable = [
+        // Relasi & Identitas
         'user_id',
         'donation_number',
         'status',
+        
+        // Data dari Formulir Pengajuan Baru
+        'waste_type',
+        'weight',
+        'condition',
+        'delivery_method',
+        'photo_path',
+        'pickup_date',
+        'address',
+        'notes',
+        
+        // Data Pelacakan & Kalkulasi (Advanced Tracking)
         'total_weight_kg',
         'points_awarded',
         'donation_address',
@@ -23,6 +36,8 @@ class WasteDonation extends Model
         'contact_person_name',
         'contact_person_phone',
         'scheduled_pickup_date',
+        
+        // Data Timestamp Proses Administrasi
         'picked_up_at',
         'received_at',
         'verified_at',
@@ -31,11 +46,13 @@ class WasteDonation extends Model
     ];
 
     protected $casts = [
-        'total_weight_kg' => 'decimal:2',
+        'total_weight_kg'       => 'decimal:2',
+        'weight'                => 'decimal:2', // Tambahan cast untuk input form
+        'pickup_date'           => 'date',      // Tambahan cast untuk input form
         'scheduled_pickup_date' => 'datetime',
-        'picked_up_at' => 'datetime',
-        'received_at' => 'datetime',
-        'verified_at' => 'datetime',
+        'picked_up_at'          => 'datetime',
+        'received_at'           => 'datetime',
+        'verified_at'           => 'datetime',
     ];
 
     public function user(): BelongsTo

@@ -58,9 +58,14 @@ Route::prefix('admin')
     ->middleware(['auth', 'web.role:admin'])
     ->name('admin.')
     ->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-        Route::resource('/products', ProductController::class);
-        Route::resource('/orders', OrderController::class);
+        Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+        Route::resource('/products', App\Http\Controllers\Admin\ProductController::class);
+        Route::resource('/orders', App\Http\Controllers\Admin\OrderController::class);
+        
+        // --- TAMBAHAN MANAJEMEN LIMBAH ---
+        Route::get('/waste', [App\Http\Controllers\Admin\WasteDonationController::class, 'index'])->name('waste.index');
+        Route::get('/waste/{id}', [App\Http\Controllers\Admin\WasteDonationController::class, 'show'])->name('waste.show');
+        Route::put('/waste/{id}/status', [App\Http\Controllers\Admin\WasteDonationController::class, 'updateStatus'])->name('waste.update_status');
     });
 
 /* ══════════════════════════════════════
@@ -83,4 +88,8 @@ Route::middleware(['auth', 'web.role:b2b'])->prefix('b2b')->name('b2b.')->group(
     Route::get('/donasi/baru', [B2bController::class, 'createDonation'])->name('donations.create');
     Route::post('/donasi', [B2bController::class, 'storeDonation'])->name('donations.store');
     Route::get('/riwayat', [B2bController::class, 'history'])->name('donations.history');
+    
+    // FITUR BARU: Tracking & Poin Ledger
+    Route::get('/donasi/{id}/lacak', [B2bController::class, 'trackDonation'])->name('donations.track');
+    Route::get('/poin', [B2bController::class, 'pointsLedger'])->name('points.index');
 });

@@ -187,7 +187,7 @@
         <span class="nav-icon">📊</span> Dashboard
       </a>
 
-      <div class="nav-section-label" style="margin-top:8px">Manajemen</div>
+    <div class="nav-section-label" style="margin-top:8px">Manajemen</div>
 
       <span class="nav-item coming-soon">
         <span class="nav-icon">👥</span> Pengguna
@@ -199,6 +199,13 @@
       <a href="{{ route('admin.orders.index') }}" class="nav-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
         <span class="nav-icon">🛒</span> Pesanan
       </a>
+      
+      {{-- --- TAMBAHAN MENU KURASI LIMBAH B2B --- --}}
+      <a href="{{ route('admin.waste.index') }}" class="nav-item {{ request()->routeIs('admin.waste.*') ? 'active' : '' }}">
+        <span class="nav-icon">♻️</span> Kurasi Limbah
+      </a>
+      {{-- --------------------------------------- --}}
+
       <span class="nav-item coming-soon">
         <span class="nav-icon">🤝</span> Ranger
         <span class="nav-badge">Soon</span>

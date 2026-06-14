@@ -23,7 +23,7 @@ class B2bController extends Controller
         
         // Menghitung ringkasan statistik
         $totalWeight = WasteDonation::where('user_id', $user->id)
-            ->where('status', 'validated')
+            ->where('status', 'selesai') 
             ->sum('weight');
 
         $pendingPickups = WasteDonation::where('user_id', $user->id)
@@ -95,4 +95,36 @@ class B2bController extends Controller
 
         return view('b2b.donations.history', compact('donations'));
     }
+
+    /**
+     * Tampilkan Halaman Pelacakan Status Limbah (Waste Tracking)
+     */
+    public function trackDonation($id)
+    {
+        // Cari data donasi berdasarkan ID, pastikan itu milik user yang sedang login
+        $donation = WasteDonation::where('user_id', Auth::id())->findOrFail($id);
+        
+        return view('b2b.donations.track', compact('donation'));
+    }
+
+    /**
+     * Tampilkan Buku Besar Poin Digital & Reward
+     */
+    public function pointsLedger()
+    {
+        $user = Auth::user();
+        
+        // Saldo Poin Saat Ini
+        $pointsData = UserPoint::where('user_id', $user->id)->first();
+        $currentPoints = $pointsData ? $pointsData->points : 0;
+
+        // Riwayat Transaksi Poin (Diasumsikan poin masuk jika status limbah 'diterima' atau 'selesai')
+        $pointHistory = WasteDonation::where('user_id', $user->id)
+            ->whereIn('status', ['diterima', 'selesai'])
+            ->orderBy('updated_at', 'desc')
+            ->paginate(10);
+
+        return view('b2b.points.index', compact('currentPoints', 'pointHistory'));
+    }
+
 }

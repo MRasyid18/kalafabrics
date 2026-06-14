@@ -71,7 +71,13 @@
 
   <nav class="navbar">
     <div class="container">
-      <a href="{{ route('home') }}" class="navbar-brand">KalaFabrics</a>
+      @php
+          $brandRoute = route('home');
+          if (auth()->check() && auth()->user()->role === 'b2b') {
+              $brandRoute = route('b2b.dashboard');
+          }
+      @endphp
+      <a href="{{ $brandRoute }}" class="navbar-brand">KalaFabrics</a>
 
       <ul class="navbar-nav">
         <li><a href="{{ route('catalog') }}"   class="{{ request()->routeIs('catalog')   ? 'active' : '' }}">Catalog</a></li>
@@ -129,6 +135,11 @@
 
               @if(auth()->user()->role === 'ranger')
                 <a href="{{ route('ranger.dashboard') }}" class="dropdown-item">🏕️ Hub Ranger</a>
+                <div class="dropdown-divider"></div>
+              @endif
+
+              @if(auth()->user()->role === 'b2b')
+                <a href="{{ route('b2b.dashboard') }}" class="dropdown-item">🏢 Dashboard Mitra B2B</a>
                 <div class="dropdown-divider"></div>
               @endif
 
