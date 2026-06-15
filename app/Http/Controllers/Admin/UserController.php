@@ -11,8 +11,8 @@ class UserController extends Controller
 {
     public function index()
     {
-        // Menampilkan akun dengan role 'pengguna' (b2c) dan 'b2b'
-        $users = User::whereIn('role', ['pengguna', 'b2c', 'b2b'])
+        // Menampilkan akun dengan role 'b2c' dan 'b2b'
+        $users = User::whereIn('role', ['b2c', 'b2b'])
                      ->orderBy('created_at', 'desc')
                      ->get();
                      
@@ -30,14 +30,14 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'role' => 'required|in:pengguna,b2b', // Validasi input role
+            'role' => 'required|in:b2c,b2b', // Validasi diperbarui ke b2c
         ]);
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role, // Menyimpan role sesuai pilihan form
+            'role' => $request->role,
         ]);
 
         return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil ditambahkan.');
@@ -53,12 +53,12 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'role' => 'required|in:pengguna,b2b',
+            'role' => 'required|in:b2c,b2b', // Validasi diperbarui ke b2c
         ]);
 
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->role = $request->role; // Memperbarui role
+        $user->role = $request->role; 
         
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);

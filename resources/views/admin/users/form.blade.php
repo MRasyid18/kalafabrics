@@ -17,7 +17,7 @@
             <div style="margin-bottom:16px;">
                 <label style="display:block; font-size:13px; font-weight:600; margin-bottom:6px; color:#6b6b5a;">Tipe Akun (Role)</label>
                 <select name="role" required style="width:100%; padding:12px; border:1px solid #e8e5dd; border-radius:8px; font-family:inherit; background:white;">
-                    <option value="pengguna" {{ (old('role', $user->role ?? '') == 'pengguna' || old('role', $user->role ?? '') == 'b2c') ? 'selected' : '' }}>👤 Pengguna Biasa (B2C)</option>
+                    <option value="b2c" {{ old('role', $user->role ?? '') == 'b2c' ? 'selected' : '' }}>👤 Pengguna Biasa (B2C)</option>
                     <option value="b2b" {{ old('role', $user->role ?? '') == 'b2b' ? 'selected' : '' }}>🏢 Mitra Perusahaan (B2B)</option>
                 </select>
                 @error('role') <span style="color:#e07070; font-size:12px;">{{ $message }}</span> @enderror

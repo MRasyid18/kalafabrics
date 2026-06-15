@@ -48,6 +48,7 @@ Route::middleware(['auth', 'web.role:b2c,b2b,ranger'])->group(function () {
     // PERBAIKI BARIS INI: Gunakan 'user.orders' sebagai namanya
     Route::get('/my-orders', [CheckoutController::class, 'history'])->name('user.orders');
 });
+
 /* ══════════════════════════════════════
    HALAMAN ADMIN
 ══════════════════════════════════════ */
@@ -59,13 +60,18 @@ Route::prefix('admin')
         Route::resource('/products', App\Http\Controllers\Admin\ProductController::class);
         Route::resource('/orders', App\Http\Controllers\Admin\OrderController::class);
         
-        // TAMBAHKAN DUA BARIS INI:
+        // Rute Manajemen Limbah B2B
         Route::get('/waste', [App\Http\Controllers\Admin\WasteDonationController::class, 'index'])->name('waste.index');
         Route::get('/waste/{id}', [App\Http\Controllers\Admin\WasteDonationController::class, 'show'])->name('waste.show');
+        Route::put('/waste/{id}/status', [App\Http\Controllers\Admin\WasteDonationController::class, 'updateStatus'])->name('waste.update_status');
+        
         Route::resource('/users', \App\Http\Controllers\Admin\UserController::class);
         Route::resource('/rangers', \App\Http\Controllers\Admin\AdminRangerController::class);
     });
 
+/* ══════════════════════════════════════
+   HALAMAN RANGER
+══════════════════════════════════════ */
 Route::middleware(['auth', 'web.role:ranger'])->prefix('ranger-hub')->name('ranger.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\RangerController::class, 'dashboard'])->name('dashboard');
     Route::get('/waste/{id}/validate', [App\Http\Controllers\RangerController::class, 'showValidateWaste'])->name('waste.validate');
@@ -75,8 +81,9 @@ Route::middleware(['auth', 'web.role:ranger'])->prefix('ranger-hub')->name('rang
     Route::put('/profile', [App\Http\Controllers\RangerController::class, 'updateProfile'])->name('profile.update');
 });
 
-
-//b2b routes
+/* ══════════════════════════════════════
+   HALAMAN B2B
+══════════════════════════════════════ */
 Route::middleware(['auth', 'web.role:b2b'])->prefix('b2b')->name('b2b.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\B2bController::class, 'dashboard'])->name('dashboard');
     // Manajemen Limbah

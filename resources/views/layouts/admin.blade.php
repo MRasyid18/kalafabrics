@@ -15,9 +15,9 @@
     button{cursor:pointer;border:none;background:none;font-family:inherit}
 
     /* Sidebar */
-    .sidebar{
-      width:240px;flex-shrink:0;background:#1e2318;min-height:100vh;
-      display:flex;flex-direction:column;position:fixed;top:0;left:0;
+	.sidebar{
+      width:240px;flex-shrink:0;background:#1e2318;height:100vh; /* <--- UBAH DI SINI */
+      display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;
       z-index:100;transition:transform .3s ease;
     }
     .sidebar-brand{
